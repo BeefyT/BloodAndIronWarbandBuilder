@@ -2,8 +2,29 @@ export interface Unit {
   name: string
   baseCost: number
   description: string
-  tags?: string[]
+  tags?: AllowedTags[]
+  stats?: {
+    competency: number
+    resilience: number
+    willpower: number
+    vigor: number
+    wounds: number
+  }
 }
+export type AllowedTags =
+  | 'Line Infantry'
+  | 'Shock Trooper'
+  | 'Skirmisher'
+  | 'Marksmen'
+  | 'Support'
+  | 'Gunner'
+  | 'Summoner'
+  | 'Eldritch'
+  | 'Hallowed'
+  | 'Operative'
+  | 'Melee Specialist'
+  | 'Ironclad'
+  | 'Vyled'
 
 // ✅ Fix: Explicitly type `unitsByFaction` as a Record<string, Unit[]>
 export const unitsByFaction: Record<string, Unit[]> = {
@@ -12,19 +33,40 @@ export const unitsByFaction: Record<string, Unit[]> = {
       name: 'Aspirant',
       baseCost: 10,
       description: 'Novice warriors of the Church.',
-      tags: ['Line Trooper'],
+      tags: ['Line Infantry'],
+      stats: {
+        competency: 3,
+        resilience: 2,
+        willpower: 4,
+        vigor: 1,
+        wounds: 1,
+      },
     },
     {
       name: 'Castellan',
       baseCost: 20,
       description: 'Heavy armor and fire support.',
       tags: ['Shock Trooper'],
+      stats: {
+        competency: 4,
+        resilience: 4,
+        willpower: 5,
+        vigor: 2,
+        wounds: 3,
+      },
     },
     {
       name: 'Judicar',
       baseCost: 25,
       description: 'Close combat specialists.',
       tags: ['Melee Specialist'],
+      stats: {
+        competency: 5,
+        resilience: 4,
+        willpower: 5,
+        vigor: 2,
+        wounds: 3,
+      },
     },
   ],
   'Xiuhcoatl Theocracy': [
@@ -66,7 +108,7 @@ export const unitsByFaction: Record<string, Unit[]> = {
       name: 'Levy Spearman',
       baseCost: 5,
       description: 'Cheap and numerous.',
-      tags: ['Line Trooper'],
+      tags: ['Line Infantry'],
     },
     {
       name: 'Knight Errant',

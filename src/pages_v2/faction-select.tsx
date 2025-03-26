@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
-import { Faction, factions } from '../data/factions'
-import useWarbandStore, { WarbandState } from '../store/warband-store'
+import { Faction, factions } from '@/data/factions'
+import useWarbandStore, { WarbandState } from '@/store/warband-store'
 
 export default function FactionSelection() {
   const navigate = useNavigate()
@@ -8,7 +8,7 @@ export default function FactionSelection() {
 
   const selectFaction = (faction: Faction) => {
     setFaction(faction)
-    navigate('/units') // Navigate to the unit selection page
+    navigate('/creator') // Navigate to the unit selection page
   }
 
   return (
