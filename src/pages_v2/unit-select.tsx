@@ -122,6 +122,8 @@ export default function UnitSelect() {
   totalSklillCost,
  ])
 
+ const warbandTotalCost = useWarbandStore.getState().getTotalCost()
+
  if (!faction) {
   return <div>Please select a faction</div>
  }
@@ -233,6 +235,42 @@ export default function UnitSelect() {
   setUnitAddons({ weapons: [], armor: [], equipment: [], skills: [] })
  }
 
+ function SubmitUnitToWarband() {
+  const equipmentCost = loadOut.equipment.reduce((sum, e) => sum + e.cost, 0)
+  const weaponsCost = loadOut.weapons.reduce(
+   (sum, w) => sum + w.combatPower * 3,
+   0
+  )
+  const armorCost = loadOut.armor.reduce((sum, a) => sum + a.cost, 0)
+  const skillsCost = loadOut.skills.reduce((sum, s) => sum + s.cost, 0)
+
+  const totalCost =
+   (selectedUnit?.baseCost || 0) +
+   equipmentCost +
+   weaponsCost +
+   armorCost +
+   skillsCost
+
+  useWarbandStore.getState().addUnit({
+   name: selectedUnit!.name,
+   description: selectedUnit!.description, // ✅ Add this line
+   baseCost: selectedUnit!.baseCost,
+   stats: selectedUnit!.stats,
+   tags: selectedUnit!.tags,
+   weapons: loadOut.weapons,
+   armor: loadOut.armor,
+   equipment: loadOut.equipment,
+   skills: loadOut.skills,
+   totalCost,
+   equipmentCost,
+   weaponsCost,
+   armorCost,
+   skillsCost,
+  })
+
+  resetState()
+ }
+
  return (
   <div>
    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
@@ -279,18 +317,19 @@ export default function UnitSelect() {
        <SheetHeader className="border-b">
         <SheetTitle>{unit.name} - Potential Add-ons</SheetTitle>
         <SheetDescription>{unit.description}</SheetDescription>
-        <div>
+        <div className="flex justify-between">
          <span>Cost: {totalCost}</span>
+         <span>Warband Total: {warbandTotalCost}</span>
         </div>
        </SheetHeader>
        <div className="overflow-y-auto">
         <Accordion type="multiple">
          {/* Armor Section */}
          <AccordionItem value="armor">
-          <AccordionTrigger>
+          <AccordionTrigger className="px-4">
            <div>Armor</div>
           </AccordionTrigger>
-          <AccordionContent className="flex flex-col gap-2 px-4">
+          <AccordionContent className="flex flex-col gap-2 p-4">
            {unitAddons.armor.map((armor) => (
             <SelectableItem
              key={armor.name}
@@ -315,7 +354,7 @@ export default function UnitSelect() {
                 return (
                  <TooltipProvider key={keyword}>
                   <Tooltip>
-                   <TooltipTrigger className="cursor-pointer hover:underline">
+                   <TooltipTrigger className=" bg-gray-200 text-gray-800 px-0.5 py-0.5 text-xs rounded-md hover:bg-gray-300 transition">
                     <span>{keyword}</span>
                    </TooltipTrigger>
                    <TooltipContent>
@@ -333,10 +372,10 @@ export default function UnitSelect() {
          </AccordionItem>
          {/* Weapons Section */}
          <AccordionItem value="weapons">
-          <AccordionTrigger>
+          <AccordionTrigger className="px-4">
            <div>Weapons</div>
           </AccordionTrigger>
-          <AccordionContent className="flex flex-col gap-2 px-4">
+          <AccordionContent className="flex flex-col gap-2 p-4">
            {unitAddons.weapons.map((weapon) => (
             <SelectableItem
              key={weapon.name}
@@ -365,7 +404,7 @@ export default function UnitSelect() {
                 return (
                  <TooltipProvider key={keyword}>
                   <Tooltip>
-                   <TooltipTrigger className="cursor-pointer hover:underline">
+                   <TooltipTrigger className=" bg-gray-200 text-gray-800 px-0.5 py-0.5 text-xs rounded-md hover:bg-gray-300 transition">
                     <span>{keyword}</span>
                    </TooltipTrigger>
                    <TooltipContent>
@@ -383,10 +422,10 @@ export default function UnitSelect() {
          </AccordionItem>
          {/* Equipment Section */}
          <AccordionItem value="equipment">
-          <AccordionTrigger>
+          <AccordionTrigger className="px-4">
            <div>Equipment</div>
           </AccordionTrigger>
-          <AccordionContent className="flex flex-col gap-2 px-4">
+          <AccordionContent className="flex flex-col gap-2 p-4">
            {unitAddons.equipment.map((equip) => (
             <SelectableItem
              key={equip.name}
@@ -406,10 +445,10 @@ export default function UnitSelect() {
          </AccordionItem>
          {/* Skills Section */}
          <AccordionItem value="skills">
-          <AccordionTrigger>
+          <AccordionTrigger className="px-4">
            <div>Skills</div>
           </AccordionTrigger>
-          <AccordionContent className="px-4">
+          <AccordionContent className="p-4">
            {unitAddons.skills.map((skill) => (
             <SelectableItem
              key={skill.name}
@@ -429,7 +468,11 @@ export default function UnitSelect() {
        </div>
        <SheetFooter className="border-t">
         <SheetClose asChild>
-         <Button className="text-black" type="submit">
+         <Button
+          className="text-black"
+          type="submit"
+          onClick={SubmitUnitToWarband}
+         >
           Save changes
          </Button>
         </SheetClose>
